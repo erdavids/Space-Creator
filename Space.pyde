@@ -215,6 +215,7 @@ def setup():
             for m in moons:
                 total_length += m.size
                 total_length += moon_sep
+            total_length -= moon_sep
             
             # Draw the moons
             strokeWeight(moon_stroke)
