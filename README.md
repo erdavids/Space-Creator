@@ -1,6 +1,6 @@
 # Space Creator
 
-I finally revisited the idea of creating solar systems since my [last attempt](https://github.com/erdavids/Generative-Space-System). This version was actually inspired by a placemat that I saw someone using at my job. Using the [circle packing](https://github.com/erdavids/Circle-Packing) process I developed recently, the script generates a random number of planets in varying sizes. The fun part is creating rings, an array of moons, and a beautiful backdrop of stars. There are a ton of customizable options to play with in this one.
+I finally revisited the idea of creating solar systems since my [last attempt](https://github.com/erdavids/Generative-Space-System). This version was actually inspired by [these deskpads](https://novelkeys.xyz/products/godspeed-deskpads) that I saw someone using at my job. Using the [circle packing](https://github.com/erdavids/Circle-Packing) process I developed recently, the script generates a random number of planets in varying sizes. The fun part is creating rings, an array of moons, and a beautiful backdrop of stars. There are a ton of customizable options to play with in this one.
 
 If you're interested in running the code on your own, make sure to download [Processing](https://www.processing.org) in order to run the .pyde file.
 
