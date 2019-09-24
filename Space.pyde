@@ -3,13 +3,15 @@ w, h = 2500, 1000
 celestials = []
 giants = []
 
-grid_width = 50
-grid_height = 50
+grid_width = 100
+grid_height = 100
 
 cell_width = float(w)/grid_width
 cell_height = float(h)/grid_height
 
 color_palette = [(229, 115, 118), (235, 167, 114), (114, 178, 241), (211, 173, 223), (170, 198, 166), (215, 255, 218), (230, 215, 0)]
+
+planet_colors = [(191, 96, 90), (170, 169, 187), (160, 198, 209), (107, 153, 168)]
 
 # Set colors (no palette)
 planet_outline_color = (255, 255, 255)
@@ -26,10 +28,10 @@ min_planet_size = 40
 max_planet_size = 260
 planet_stroke = 2
 
-min_rings = 2
+min_rings = 3
 max_rings = 6
 ring_stroke = 3
-ring_chance = .2
+ring_chance = .3
 realistic = True
 
 moon_sep = 5
@@ -40,13 +42,13 @@ moon_chance = .3
 
 # Stars
 add_stars = True
-star_count = 12000
+star_count = 15000
 min_star_size = 1
 max_star_size = 3
 min_star_opacity = 0
 max_star_opacity = 255
 star_sep_star = 1
-star_sep_planet = 20
+star_sep_planet = 6
 
 add_star_colors = True
 color_chance = .2
@@ -58,7 +60,7 @@ def set_palette_fill():
     fill(c[0], c[1], c[2])
     
 def set_palette_stroke():
-    c = color_palette[int(random(len(color_palette)))]
+    c = color_palette[int(random(len(planet_colors)))]
     stroke(c[0], c[1], c[2])
 
 # Convert pixel position to grid element
@@ -185,6 +187,7 @@ class Celestial:
                 rotate(rotation)
                 ellipse(0, 0, starting_height + i * 10, starting_width + i * 30)
                 popMatrix()
+                
         strokeWeight(planet_stroke)    
         pushMatrix()
         translate(self.position[0], self.position[1])
@@ -252,7 +255,6 @@ def setup():
             moon_start = center - total_length/2
             for m in moons:
                 moon_start += m.size/2
-                
                 m.add_giant((moon_start, moon_y), False)
                 
                 moon_start += m.size/2 + moon_sep
