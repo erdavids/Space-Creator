@@ -3,13 +3,13 @@ w, h = 2500, 1000
 celestials = []
 giants = []
 
-grid_width = 30
-grid_height = 30
+grid_width = 50
+grid_height = 50
 
 cell_width = float(w)/grid_width
 cell_height = float(h)/grid_height
 
-color_palette = [(229, 115, 118), (235, 167, 114), (114, 178, 241), (211, 173, 223), (170, 198, 166)]
+color_palette = [(229, 115, 118), (235, 167, 114), (114, 178, 241), (211, 173, 223), (170, 198, 166), (215, 255, 218), (230, 215, 0)]
 
 # Set colors (no palette)
 planet_outline_color = (255, 255, 255)
@@ -24,25 +24,42 @@ sun_size = 1500
 planet_sep = 150
 min_planet_size = 40
 max_planet_size = 260
-planet_stroke = 8
+planet_stroke = 2
 
 min_rings = 2
 max_rings = 6
-ring_stroke = 4
+ring_stroke = 3
+ring_chance = .2
+realistic = True
 
 moon_sep = 5
 min_moon_size = 5
 max_moon_size = 25
 moon_stroke = 4
+moon_chance = .3
 
 # Stars
 add_stars = True
+star_count = 12000
+min_star_size = 1
+max_star_size = 3
+min_star_opacity = 0
+max_star_opacity = 255
+star_sep_star = 1
+star_sep_planet = 20
+
+add_star_colors = True
+color_chance = .2
 
 
 # Find and set a random color from predefined palette
-def set_palette_color():
+def set_palette_fill():
     c = color_palette[int(random(len(color_palette)))]
     fill(c[0], c[1], c[2])
+    
+def set_palette_stroke():
+    c = color_palette[int(random(len(color_palette)))]
+    stroke(c[0], c[1], c[2])
 
 # Convert pixel position to grid element
 def get_grid_position(x, y):
@@ -65,13 +82,15 @@ class Celestial:
                 
         # if (self.position[0] + self.size/2 > w or self.position[0] - self.size/2 < 0 or self.position[1] + self.size/2 > h or self.position[1] - self.size/2 < 0):
         #     valid = False
-                
+        
         if (valid == True):
-            if (rings == True):
-                self.add_rings()
-            giants.append(self)
-            fill(planet_fill_color[0], planet_fill_color[1], planet_fill_color[2])
-            self.display()
+            if (rings == True and random(1) < ring_chance):
+                self.display_with_rings()
+                giants.append(self)
+            else:
+                fill(planet_fill_color[0], planet_fill_color[1], planet_fill_color[2])
+                self.display()
+                giants.append(self)
         
     # Circle isn't placed randomly and gets evaluated like a gridless object
     def place_manually(self, position):
@@ -127,7 +146,7 @@ class Celestial:
             valid = True
             for c in compare_list:
                 distance = sqrt(pow(c.position[1] - self.position[1], 2) + pow(c.position[0] - self.position[0], 2))
-                if (distance < (c.size/2 + self.size/2 + 1)):
+                if (distance < (c.size/2 + self.size/2 + star_sep_star)):
                     valid = False
                     
             # Avoid placing stars too close to planets and sun
@@ -138,7 +157,7 @@ class Celestial:
             
             for c in compare_list:
                 distance = sqrt(pow(c.position[1] - self.position[1], 2) + pow(c.position[0] - self.position[0], 2))
-                if (distance < (c.size/2 + self.size/2 + 20)):
+                if (distance < (c.size/2 + self.size/2 + star_sep_planet)):
                     valid = False
                     
                 
@@ -153,19 +172,28 @@ class Celestial:
                 self.display()
                 break
                 
-    def add_rings(self):
+    def display_with_rings(self):
         strokeWeight(ring_stroke)
-        if (len(giants) != 0 and random(1) < .2):
+        if (len(giants) != 0):
             starting_height = random(self.size/4, self.size/2)
             starting_width = random(self.size*1.2, self.size*2)
-            rotation = random(6)
             noFill()
+            rotation = random(6)
             for i in range(int(random(min_rings, max_rings))):
                 pushMatrix()
                 translate(self.position[0], self.position[1])
                 rotate(rotation)
                 ellipse(0, 0, starting_height + i * 10, starting_width + i * 30)
                 popMatrix()
+        strokeWeight(planet_stroke)    
+        pushMatrix()
+        translate(self.position[0], self.position[1])
+        rotate(rotation)
+        fill(0, 0, 0, 0)
+        circle(0, 0, self.size)
+        fill(planet_fill_color[0], planet_fill_color[1], planet_fill_color[2])
+        arc(0, 0, self.size, self.size, 1.5*PI, 2.5*PI);
+        popMatrix()
             
     def get_grid_position(self):
         x = self.position[0]
@@ -173,7 +201,9 @@ class Celestial:
         return int(x/cell_width) + int(y/cell_height) * grid_width 
         
     def display(self):
+        strokeWeight(planet_stroke)
         circle(self.position[0], self.position[1], self.size)
+            
         
 
 
@@ -182,7 +212,7 @@ def setup():
     pixelDensity(2)
     
     background(0, 0, 0)
-    strokeWeight(5)
+    strokeWeight(planet_stroke)
     stroke(planet_outline_color[0], planet_outline_color[1], planet_outline_color[2])
     fill(planet_fill_color[0], planet_fill_color[1], planet_fill_color[2])
     
@@ -205,7 +235,7 @@ def setup():
         # Add moons for the planet
         moons = []
         moon_y = h - h/4
-        if (random(1) < .3):
+        if (random(1) < moon_chance):
             for i in range(int(random(1, 8))):
                 moon = Celestial(random(min_moon_size, max_moon_size))
                 moons.append(moon)
@@ -235,12 +265,18 @@ def setup():
         celestials.append([])
         
     noStroke()
-    fill(255, 255, 255, random(0, 255))
+    fill(255, 255, 255, random(min_star_opacity, max_star_opacity))
     if (add_stars == True):
-        for x in range(6000):
-            star = Celestial(random(1, 3))
+        for x in range(star_count):
+            if (random(1) < color_chance and add_star_colors == True):
+                c = color_palette[int(random(len(color_palette)))]
+                fill(c[0], c[1], c[2], random(min_star_opacity, max_star_opacity))
+            else:
+                fill(255, 255, 255, random(min_star_opacity, max_star_opacity))
+            star = Celestial(random(min_star_size, max_star_size))
             star.add_random_valid()
-        
+    
+
     
 
     save("Examples/test.png")
