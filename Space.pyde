@@ -21,19 +21,23 @@ planet_fill_color = (0, 0, 0)
 
 # System Variables
 
+# Sun
 sun_size = 1500
 
+# Planets
 planet_sep = 150
 min_planet_size = 40
 max_planet_size = 260
-planet_stroke = 2
+planet_stroke = 5
 
+# Ring Systems
 min_rings = 3
 max_rings = 6
 ring_stroke = 3
 ring_chance = .3
 realistic = True
 
+# Moons
 moon_sep = 5
 min_moon_size = 5
 max_moon_size = 25
@@ -42,7 +46,7 @@ moon_chance = .3
 
 # Stars
 add_stars = True
-star_count = 15000
+star_count = 16000
 min_star_size = 1
 max_star_size = 3
 min_star_opacity = 0
@@ -59,6 +63,7 @@ def set_palette_fill():
     c = color_palette[int(random(len(color_palette)))]
     fill(c[0], c[1], c[2])
     
+# Set the outline colors to a random color
 def set_palette_stroke():
     c = color_palette[int(random(len(planet_colors)))]
     stroke(c[0], c[1], c[2])
@@ -173,7 +178,8 @@ class Celestial:
                 celestials[grid_position].append(self)
                 self.display()
                 break
-                
+            
+    # Draws the rings and planet    
     def display_with_rings(self):
         strokeWeight(ring_stroke)
         if (len(giants) != 0):
@@ -197,12 +203,14 @@ class Celestial:
         fill(planet_fill_color[0], planet_fill_color[1], planet_fill_color[2])
         arc(0, 0, self.size, self.size, 1.5*PI, 2.5*PI);
         popMatrix()
-            
+    
+    # Used for performance
     def get_grid_position(self):
         x = self.position[0]
         y = self.position[1]
         return int(x/cell_width) + int(y/cell_height) * grid_width 
         
+    # Draw a planet without rings
     def display(self):
         strokeWeight(planet_stroke)
         circle(self.position[0], self.position[1], self.size)
@@ -232,6 +240,8 @@ def setup():
         
         strokeWeight(planet_stroke)
         fill(planet_fill_color[0], planet_fill_color[1], planet_fill_color[2])
+        
+        # Add the current planet
         planet = Celestial(next_planet_size)
         planet.add_giant((center, h/2), True)
         
@@ -260,6 +270,7 @@ def setup():
                 moon_start += m.size/2 + moon_sep
                 
         
+        # Update tracking variable
         last_size = next_planet_size
     
     # Add the stars
@@ -268,6 +279,8 @@ def setup():
         
     noStroke()
     fill(255, 255, 255, random(min_star_opacity, max_star_opacity))
+    
+    # Add all the stars using circle packing method
     if (add_stars == True):
         for x in range(star_count):
             if (random(1) < color_chance and add_star_colors == True):
@@ -277,8 +290,6 @@ def setup():
                 fill(255, 255, 255, random(min_star_opacity, max_star_opacity))
             star = Celestial(random(min_star_size, max_star_size))
             star.add_random_valid()
-    
-
     
 
     save("Examples/test.png")
