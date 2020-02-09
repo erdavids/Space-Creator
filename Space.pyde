@@ -28,12 +28,12 @@ sun_size = 1500
 planet_sep = 150
 min_planet_size = 40
 max_planet_size = 260
-planet_stroke = 5
+planet_stroke = 1
 
 # Ring Systems
 min_rings = 3
 max_rings = 6
-ring_stroke = 3
+ring_stroke = 1
 ring_chance = .3
 realistic = True
 
@@ -56,6 +56,10 @@ star_sep_planet = 6
 
 add_star_colors = True
 color_chance = .2
+
+asteroid_max_size = 15
+asteroid_min_size = 5
+
 
 
 # Find and set a random color from predefined palette
@@ -104,6 +108,31 @@ class Celestial:
         self.position = position
         gridless.append(self)
         self.display()
+    
+    def place_asteroid(self, position):
+        
+        strokeWeight(1)
+        stroke(planet_outline_color[0], planet_outline_color[1], planet_outline_color[2])
+        fill(planet_fill_color[0], planet_fill_color[1], planet_fill_color[2])
+        
+        points = []
+        rad = 0.0
+        while (rad < 2*PI):
+            #point(250 + (random(80, 100) * cos(rad)), 250 + (random(80, 100) * sin(rad)))
+            cos_r = random(asteroid_min_size, asteroid_max_size)
+            sin_r = random(asteroid_min_size, asteroid_max_size)
+            p = (position[0] + (cos_r * cos(rad)), position[1] + (sin_r * sin(rad)), rad, cos_r, sin_r)
+            points.append(p)
+            rad += .6
+        
+        beginShape()
+        for p in points:
+            curveVertex(p[0], p[1])
+            
+        curveVertex(points[0][0], points[0][1])
+        curveVertex(points[1][0], points[1][1])
+        curveVertex(points[2][0], points[2][1])
+        endShape()
         
     # Probably used for the stars
     def add_random_valid(self):
@@ -276,6 +305,9 @@ def setup():
     # Add the stars
     for i in range(grid_width * grid_height):
         celestials.append([])
+        
+    # planet = Celestial(400)
+    # planet.place_asteroid((w/2, h/2))
         
     noStroke()
     fill(255, 255, 255, random(min_star_opacity, max_star_opacity))
